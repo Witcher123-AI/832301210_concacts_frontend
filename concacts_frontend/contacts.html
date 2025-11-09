@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>通讯录系统</title>
+    <style>
+        /* 全局样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* 主容器 */
+        .app-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        
+        /* 头部样式 */
+        .app-header {
+            background: #4285f4;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .app-header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        /* 内容区域 */
+        .app-content {
+            padding: 30px 40px;
+        }
+        
+        /* 容器样式 */
+        .container {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .container h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 500;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+            display: block;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 1rem;
+            background: white;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #4285f4;
+        }
+        
+        /* 按钮样式 */
+        .button-group {
+            margin-top: 20px;
+        }
+        
+        button {
+            background: #4285f4;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.2s ease;
+        }
+        
+        button:hover {
+            background: #3367d6;
+        }
+        
+        .edit-btn {
+            background: #f1f3f4;
+            color: #333;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .edit-btn:hover {
+            background: #e8eaed;
+        }
+        
+        .delete-btn {
+            background: #ea4335;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+        
+        .delete-btn:hover {
+            background: #d93025;
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            background: white;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th {
+            background: #f1f3f4;
+            color: #333;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tr:hover td {
+            background-color: #f5f5f5;
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 25px;
+            border-radius: 6px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+        
+        .modal-content h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+        
+        .close {
+            color: #999;
+            position: absolute;
+            right: 30px;
+            top: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .close:hover,
+        .close:focus {
+            color: #333;
+            transform: rotate(90deg);
+        }
+        
+        /* 空状态样式 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .empty-state p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        /* 响应式设计 - 平板设备 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-container {
+                margin: 15px auto;
+                max-width: 100%;
+            }
+            
+            .app-header {
+                padding: 25px 20px;
+            }
+            
+            .app-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .app-content {
+                padding: 20px;
+            }
+            
+            .container {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .container h2 {
+                font-size: 1.3rem;
+            }
+            
+            th, td {
+                padding: 12px 8px;
+            }
+            
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            button {
+                margin: 5px 0;
+                width: 100%;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                width: calc(100% - 20px);
+                max-width: none;
+                padding: 20px;
+            }
+        }
+        
+        /* 响应式设计 - 移动设备 */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .app-container {
+                margin: 10px auto;
+                border-radius: 6px;
+            }
+            
+            .app-header {
+                padding: 20px 15px;
+                text-align: center;
+            }
+            
+            .app-header h1 {
+                font-size: 1.6rem;
+            }
+            
+            .app-content {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            .container h2 {
+                font-size: 1.2rem;
+            }
+            
+            th, td {
+                padding: 10px 6px;
+                font-size: 14px;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .edit-btn, .delete-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+                margin: 2px;
+            }
+            
+            .modal-content {
+                margin: 10px;
+                padding: 15px;
+            }
+            
+            .empty-state {
+                padding: 30px 15px;
+            }
+            
+            .empty-state p {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1>通讯录管理系统</h1>
+            <p>高效管理您的联系人信息</p>
+        </div>
+        
+        <div class="app-content">
+            <div class="container">
+                <h2>添加联系人</h2>
+                <div class="form-group">
+                    <label for="nameInput">姓名</label>
+                    <input type="text" id="nameInput" placeholder="请输入联系人姓名">
+                </div>
+                <div class="form-group">
+                    <label for="phoneInput">电话号码</label>
+                    <input type="text" id="phoneInput" placeholder="请输入联系电话">
+                </div>
+                <div class="button-group">
+                    <button onclick="addContact()">添加联系人</button>
+                </div>
+            </div>
+            
+            <div class="container">
+                <h2>联系人列表</h2>
+                <div class="table-container">
+                    <table id="contactsTable">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>电话号码</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contactsList">
+                            <!-- 联系人列表将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <p>暂无联系人信息</p>
+                    <button onclick="showAddForm()">添加第一个联系人</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 编辑联系人弹窗 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>编辑联系人</h3>
+            <input type="hidden" id="editId">
+            <input type="text" id="editName" placeholder="姓名">
+            <input type="text" id="editPhone" placeholder="电话号码">
+            <button onclick="updateContact()">保存</button>
+        </div>
+    </div>
+
+    <script>
+        // 使用localStorage替代后端API
+        // 获取联系人数据
+        function getContacts() {
+            const contacts = localStorage.getItem('contacts');
+            return contacts ? JSON.parse(contacts) : [];
+        }
+        
+        // 保存联系人数据
+        function saveContacts(contacts) {
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+        }
+        
+        // 显示添加表单
+        function showAddForm() {
+            document.getElementById('nameInput').focus();
+        }
+        
+        // 加载联系人列表
+        function loadContacts() {
+            const contacts = getContacts();
+            const contactsList = document.getElementById('contactsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            contactsList.innerHTML = '';
+            
+            if (contacts.length === 0) {
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+                
+                contacts.forEach(contact => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${contact.name}</td>
+                        <td>${contact.phone}</td>
+                        <td>
+                            <button class="edit-btn" onclick="editContact(${contact.id}, '${contact.name}', '${contact.phone}')">编辑</button>
+                            <button class="delete-btn" onclick="deleteContact(${contact.id})">删除</button>
+                        </td>
+                    `;
+                    // 添加淡入动画
+                    row.style.opacity = '0';
+                    row.style.transform = 'translateY(10px)';
+                    row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    
+                    contactsList.appendChild(row);
+                    
+                    // 触发重排后应用动画
+                    setTimeout(() => {
+                        row.style.opacity = '1';
+                        row.style.transform = 'translateY(0)';
+                    }, 10);
+                });
+            }
+        }
+        
+        // 添加联系人
+        function addContact() {
+            const name = document.getElementById('nameInput').value;
+            const phone = document.getElementById('phoneInput').value;
+            
+            if (!name || !phone) {
+                alert('请输入姓名和电话号码');
+                return;
+            }
+            
+            const contacts = getContacts();
+            const newContact = {
+                id: Date.now(), // 使用时间戳作为唯一ID
+                name: name,
+                phone: phone
+            };
+            
+            contacts.push(newContact);
+            saveContacts(contacts);
+            loadContacts();
+            
+            // 清空输入框
+            document.getElementById('nameInput').value = '';
+            document.getElementById('phoneInput').value = '';
+            
+            alert('联系人添加成功！');
+        }
+        
+        // 编辑联系人
+        function editContact(id, name, phone) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editName').value = name;
+            document.getElementById('editPhone').value = phone;
+            document.getElementById('editModal').style.display = 'block';
+        }
+        
+        // 更新联系人
+        function updateContact() {
+            const id = parseInt(document.getElementById('editId').value);
+            const name = document.getElementById('editName').value;
+            const phone = document.getElementById('editPhone').value;
+            
+            if (!name || !phone) {
+                alert('请输入姓名和电话号码');
+                return;
+            }
+            
+            let contacts = getContacts();
+            const index = contacts.findIndex(contact => contact.id === id);
+            
+            if (index !== -1) {
+                contacts[index] = { id, name, phone };
+                saveContacts(contacts);
+                loadContacts();
+                closeModal();
+                alert('联系人更新成功！');
+            } else {
+                alert('联系人不存在！');
+            }
+        }
+        
+        // 删除联系人
+        function deleteContact(id) {
+            if (confirm('确定要删除这个联系人吗？')) {
+                let contacts = getContacts();
+                contacts = contacts.filter(contact => contact.id !== id);
+                saveContacts(contacts);
+                loadContacts();
+                alert('联系人删除成功！');
+            }
+        }
+        
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        
+        // 点击弹窗外部关闭
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('editModal')) {
+                closeModal();
+            }
+        }
+        
+        // 页面加载时加载联系人列表
+        window.onload = loadContacts;
+    </script>
+</body>
+</html>
