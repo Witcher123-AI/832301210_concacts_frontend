@@ -63,6 +63,3 @@ StudentID_concacts_frontend/
 - 平板设备（≤768px）：调整布局和间距
 - 移动设备（≤480px）：优化触控体验和表格显示
 
-## 许可证
-
-MIT License
